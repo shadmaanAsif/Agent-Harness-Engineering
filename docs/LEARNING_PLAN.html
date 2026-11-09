@@ -1,0 +1,759 @@
+<title>Agent Harness Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; the 11 phases are collapsible lessons, each a Learn / Code along / Break it / Prove it sequence. */
+:root {
+  --bg: #eceff3;
+  --surface: #f9fafb;
+  --surface-2: #e2e7ee;
+  --ink: #131c26;
+  --ink-2: #4a5868;
+  --line: #cdd5df;
+  --accent: #0b6e63;
+  --accent-ink: #ffffff;
+  --accent-soft: #d3ebe7;
+  --warn: #a8480a;
+  --warn-soft: #f6e3d3;
+  --code-bg: #131c26;
+  --code-ink: #d7e6e3;
+  --font-display: "Bricolage Grotesque", "Avenir Next", "Segoe UI", sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e151d; --surface: #151f2a; --surface-2: #1f2c3a; --ink: #e6edf4; --ink-2: #9db0c2;
+    --line: #2a3a4b; --accent: #4fd1be; --accent-ink: #06201c; --accent-soft: #14352f;
+    --warn: #f0a05f; --warn-soft: #3a2616; --code-bg: #0a1017; --code-ink: #cfe7e2;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e151d; --surface: #151f2a; --surface-2: #1f2c3a; --ink: #e6edf4; --ink-2: #9db0c2;
+  --line: #2a3a4b; --accent: #4fd1be; --accent-ink: #06201c; --accent-soft: #14352f;
+  --warn: #f0a05f; --warn-soft: #3a2616; --code-bg: #0a1017; --code-ink: #cfe7e2;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font: 400 16px/1.6 var(--font-body);
+  padding-block: 32px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+a { color: var(--accent); text-underline-offset: 3px; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+code, pre, .mono { font-family: var(--font-mono); }
+code { font-size: .9em; background: var(--surface-2); padding: 1px 6px; border-radius: 4px; }
+
+.hero { display: flex; flex-direction: column; gap: 18px; }
+.eyebrow { font: 500 12px/1 var(--font-mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.pill { font: 500 12px/1 var(--font-mono); padding: 6px 10px; border-radius: 999px; background: var(--warn-soft); color: var(--warn); letter-spacing: .04em; }
+h1 { font: 800 clamp(2.2rem, 7vw, 3.6rem)/1.02 var(--font-display); letter-spacing: -.02em; margin: 0; text-wrap: balance; }
+.lede { font-size: 1.1rem; color: var(--ink-2); max-width: 62ch; margin: 0; }
+.loop { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 6px; }
+.loop .node { font: 500 13px/1 var(--font-mono); padding: 9px 12px; border-radius: 8px; background: var(--surface); border: 1px solid var(--line); }
+.loop .node.you { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.loop .arrow { color: var(--ink-2); font-family: var(--font-mono); }
+.loop .back { flex-basis: 100%; font: 400 12px/1.4 var(--font-mono); color: var(--ink-2); }
+.stats { display: flex; flex-wrap: wrap; gap: 28px; padding-top: 6px; }
+.stat { display: flex; flex-direction: column; gap: 2px; }
+.stat b { font: 800 2rem/1 var(--font-display); }
+.stat span { font-size: 13px; color: var(--ink-2); }
+
+section { display: flex; flex-direction: column; gap: 18px; scroll-margin-top: 16px; }
+h2 { font: 800 1.7rem/1.15 var(--font-display); letter-spacing: -.01em; margin: 0; display: flex; gap: 14px; align-items: baseline; text-wrap: balance; }
+h2 .n { font: 500 .9rem/1 var(--font-mono); color: var(--accent); border: 1px solid var(--accent); border-radius: 6px; padding: 5px 8px; flex: none; }
+.note { color: var(--ink-2); margin: 0; }
+.rows { display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.row { display: grid; grid-template-columns: 3.4rem minmax(0, 1fr); gap: 4px 14px; padding: 14px 0; border-bottom: 1px solid var(--line); scroll-margin-top: 16px; }
+.row .id { font: 500 13px/1.9 var(--font-mono); color: var(--ink-2); }
+.row .t { font-weight: 600; }
+.row .d { color: var(--ink-2); grid-column: 2; }
+.row:target { background: var(--accent-soft); }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 560px; font-size: .95rem; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font: 500 12px/1.2 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); }
+pre.tree { background: var(--code-bg); color: var(--code-ink); padding: 18px 20px; border-radius: 10px; overflow-x: auto; font-size: 13px; line-height: 1.55; margin: 0; }
+
+.cycle { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.cycle div { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+.cycle b { font: 600 1rem/1.2 var(--font-display); }
+.cycle span { font-size: .88rem; color: var(--ink-2); }
+.cycle .k { font: 500 11px/1 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.cycle .k.w { color: var(--warn); }
+
+.bar { display: flex; height: 44px; gap: 3px; }
+.bar a { flex: var(--h) 1 0; min-width: 0; background: var(--accent); color: var(--accent-ink); text-decoration: none; border-radius: 6px; display: flex; align-items: center; justify-content: center; font: 500 12px/1 var(--font-mono); opacity: .55; transition: opacity .15s; }
+.bar a:nth-child(odd) { opacity: .8; }
+.bar a:hover, .bar a:focus-visible { opacity: 1; }
+.barcap { display: flex; justify-content: space-between; font: 400 12px/1.4 var(--font-mono); color: var(--ink-2); }
+
+.controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+button { font: 500 14px/1 var(--font-body); color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+
+.phases { display: flex; flex-direction: column; gap: 10px; }
+details.phase { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; scroll-margin-top: 16px; }
+details.phase[open] { border-color: var(--accent); }
+details.phase:target { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: auto minmax(0, 1fr) auto auto; gap: 4px 16px; align-items: center; padding: 16px 18px; }
+summary::-webkit-details-marker { display: none; }
+summary .pn { font: 800 1.5rem/1 var(--font-display); color: var(--accent); min-width: 2.6rem; }
+summary .pt { font: 600 1.05rem/1.3 var(--font-display); }
+summary .pg { grid-column: 2; color: var(--ink-2); font-size: .9rem; }
+summary .hrs { font: 500 12px/1 var(--font-mono); background: var(--surface-2); padding: 6px 9px; border-radius: 999px; grid-row: 1; grid-column: 3; white-space: nowrap; }
+summary .chev { grid-row: 1; grid-column: 4; width: 10px; height: 10px; border-right: 2px solid var(--ink-2); border-bottom: 2px solid var(--ink-2); transform: rotate(45deg); transition: transform .15s; margin-right: 4px; }
+details[open] .chev { transform: rotate(-135deg); }
+.pbody { padding: 6px 18px 22px; display: flex; flex-direction: column; border-top: 1px solid var(--line); }
+.stage { font: 500 11px/1 var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--accent); padding: 18px 0 2px; }
+.stage.w { color: var(--warn); }
+.f { display: grid; grid-template-columns: 7.2rem minmax(0, 1fr); gap: 4px 14px; padding: 13px 0; border-bottom: 1px dashed var(--line); scroll-margin-top: 16px; }
+.f:last-child { border-bottom: 0; }
+.f .lab { font: 500 12px/1.9 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-2); display: flex; flex-direction: column; }
+.f .lab small { font: 400 11px/1.4 var(--font-mono); letter-spacing: 0; text-transform: none; }
+.f.drill .lab { color: var(--warn); }
+.f.drill .val { background: var(--warn-soft); border-radius: 8px; padding: 10px 12px; margin: -2px 0; }
+.val p { margin: 0 0 8px; }
+.val p:last-child { margin-bottom: 0; }
+.val ol, .val ul { margin: 0; padding-left: 1.2em; display: flex; flex-direction: column; gap: 6px; }
+.val dl { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.val dt { font-weight: 600; }
+.val dd { margin: 0; color: var(--ink-2); }
+.steps { list-style: none; padding: 0 !important; counter-reset: s; }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 1.8rem minmax(0, 1fr); gap: 8px; }
+.steps li::before { content: counter(s); font: 500 12px/1.9 var(--font-mono); color: var(--accent-ink); background: var(--accent); border-radius: 50%; width: 1.5rem; height: 1.5rem; display: flex; align-items: center; justify-content: center; }
+.steps li b { display: block; }
+.steps li span { color: var(--ink-2); font-size: .92rem; }
+.cmd { display: flex; gap: 8px; align-items: stretch; }
+.cmd pre { flex: 1; min-width: 0; margin: 0; background: var(--code-bg); color: var(--code-ink); padding: 11px 14px; border-radius: 8px; overflow-x: auto; font-size: 13px; }
+.cmd button { flex: none; }
+.expect { font-size: .92rem; color: var(--ink-2); margin-top: 8px !important; }
+.tag { font: 500 11px/1 var(--font-mono); padding: 3px 6px; border-radius: 4px; background: var(--accent-soft); color: var(--accent); margin-left: 6px; vertical-align: 1px; }
+
+.prog { height: 10px; border-radius: 99px; background: var(--surface-2); overflow: hidden; }
+.prog i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+.check { display: grid; grid-template-columns: 3.4rem auto minmax(0, 1fr) auto; gap: 14px; align-items: center; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.check .id { font: 500 13px/1 var(--font-mono); color: var(--ink-2); }
+.check input { width: 18px; height: 18px; accent-color: var(--accent); margin: 0; }
+.check label { cursor: pointer; }
+.check input:checked + label { color: var(--ink-2); text-decoration: line-through; }
+.check .go { font: 500 12px/1 var(--font-mono); }
+
+.dg { margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.dg svg { display: block; width: 100%; height: auto; color: var(--ink-2); }
+.dg figcaption { font-size: .9rem; color: var(--ink-2); max-width: 64ch; }
+.dg figcaption b { color: var(--ink); }
+.dg text { fill: var(--ink); font: 500 13px var(--font-body); }
+.dg .sub { fill: var(--ink-2); font: 400 11px var(--font-body); }
+.dg .lbl { fill: var(--ink-2); font: 400 11px var(--font-mono); }
+.dg .lt { fill: var(--ink-2); font: 500 11px var(--font-mono); letter-spacing: .06em; text-transform: uppercase; }
+.dg .edge { stroke: currentColor; stroke-width: 1.4; fill: none; }
+.dg .k-h rect { fill: var(--surface); stroke: var(--ink-2); stroke-width: 1.2; }
+.dg .k-m rect { fill: var(--surface); stroke: var(--ink); stroke-width: 1.2; stroke-dasharray: 5 3; }
+.dg .k-n rect { fill: var(--accent); stroke: var(--accent); }
+.dg .k-n text { fill: var(--accent-ink); }
+.dg .k-n .sub { fill: var(--accent-ink); opacity: .85; }
+.dg .k-x rect { fill: var(--surface-2); stroke: var(--line); stroke-width: 1.2; }
+.dg .k-w rect { fill: var(--warn-soft); stroke: var(--warn); stroke-width: 1.2; }
+.dg .k-w text { fill: var(--warn); }
+.dg .k-w .sub { fill: var(--warn); }
+.dg .ly0 { fill: var(--surface-2); stroke: var(--line); }
+.dg .ly1 { fill: var(--surface); stroke: var(--line); }
+.dg .ly2 { fill: var(--surface-2); stroke: var(--line); }
+.dg .ly3 { fill: var(--surface); stroke: var(--accent); stroke-width: 1.6; }
+.dg .cell { fill: var(--surface-2); }
+.dg .dot { fill: var(--accent); }
+.dg .diag { fill: var(--line); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font: 400 12px/1.4 var(--font-mono); color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend i { width: 18px; height: 11px; border-radius: 3px; border: 1.3px solid var(--ink-2); background: var(--surface); }
+.legend i.m { border-color: var(--ink); border-style: dashed; }
+.legend i.x { background: var(--surface-2); border-color: var(--line); }
+.legend i.n { background: var(--accent); border-color: var(--accent); }
+.legend i.w { background: var(--warn-soft); border-color: var(--warn); }
+@media (max-width: 560px) {
+  summary { grid-template-columns: auto minmax(0, 1fr) auto; }
+  summary .hrs { grid-column: 2; grid-row: 3; justify-self: start; margin-top: 6px; }
+  summary .chev { grid-column: 3; grid-row: 1; }
+  .f { grid-template-columns: minmax(0, 1fr); }
+  .row { grid-template-columns: 3rem minmax(0, 1fr); }
+  .check { grid-template-columns: 3rem auto minmax(0, 1fr); }
+  .check .go { grid-column: 3; }
+  .bar a span { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="eyebrow"><span>Agent harness engineering</span><span class="pill">Draft, awaiting approval</span></div>
+    <h1>Learn to build the runtime around the model, by building it.</h1>
+    <p class="lede">You code along with a coding agent, one phase at a time. Each phase teaches one idea, builds it in small steps you can read, breaks it on purpose, fixes it, and proves the fix with a command you run yourself.</p>
+    <div class="loop" aria-label="The agent loop">
+      <span class="node">task</span><span class="arrow">→</span>
+      <span class="node">LLM call</span><span class="arrow">→</span>
+      <span class="node">tool request</span><span class="arrow">→</span>
+      <span class="node you">your harness runs it</span><span class="arrow">→</span>
+      <span class="node">result appended</span><span class="arrow">↺</span>
+      <span class="node">done / step limit</span>
+      <span class="back">The harness is everything in this loop that is not the model.</span>
+    </div>
+    <div class="stats">
+      <div class="stat"><b>11</b><span>phases (0 to 10)</span></div>
+      <div class="stat"><b>~68 h</b><span>estimated total</span></div>
+      <div class="stat"><b>~12 wk</b><span>at 6 h per week</span></div>
+      <div class="stat"><b>0</b><span>lines of code written so far</span></div>
+    </div>
+  </header>
+
+  <section id="s1">
+    <h2><span class="n">1</span>What you are building, and why</h2>
+    <p class="note">An LLM on its own only turns text into text. It cannot read a file, remember yesterday, or stop itself from doing something risky. The <b>harness</b> is the program you write around it that does those jobs. A working agent is the model plus a harness with seven jobs. Each job gets its own phase.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Job of the harness</th><th>In plain words</th><th>What breaks without it</th><th>Phase</th></tr></thead>
+        <tbody id="pillars"></tbody>
+      </table>
+    </div>
+    <div id="onion"></div>
+    <div id="oneRun"></div>
+  </section>
+
+  <section id="s2">
+    <h2><span class="n">2</span>How we code along</h2>
+    <p class="note">Every phase uses the same five-stage rhythm, so you always know where you are. I write all the code; you read it, run it, and answer questions. Nothing starts until you say "next".</p>
+    <div class="cycle">
+      <div><span class="k">Stage 1</span><b>Learn</b><span>Plain-language idea, new terms, how it works step by step. No code yet.</span></div>
+      <div><span class="k">Stage 2</span><b>Code along</b><span>I build in small steps, each one a readable change. After each I explain it and you can ask questions.</span></div>
+      <div><span class="k w">Stage 3</span><b>Break it</b><span>I run the failure drill first, so you see the real problem before the fix exists.</span></div>
+      <div><span class="k">Stage 4</span><b>Prove it</b><span>I add the fix, then we run tests, the eval and the proof command. You run it too.</span></div>
+      <div><span class="k">Stage 5</span><b>Check</b><span>3 to 5 questions. Anything unclear gets re-explained, then I update PROGRESS.md and NOTES.md.</span></div>
+    </div>
+    <div id="lessonFlow"></div>
+    <div class="rows" id="rules"></div>
+  </section>
+
+  <section id="s3">
+    <h2><span class="n">3</span>Assumptions</h2>
+    <p class="note">You left the weekly hours and number of weeks blank, so these are my defaults. Correct any that are wrong.</p>
+    <div class="rows" id="assumptions"></div>
+  </section>
+
+  <section id="s4">
+    <h2><span class="n">4</span>Final repo layout</h2>
+    <p class="note">Target state after Phase 10. Phase 0 is a single file on purpose; from Phase 1 the code is split into modules, one folder per job from §1. The diagram below shows how those folders talk to each other at run time.</p>
+    <div class="tablewrap"><pre class="tree">Agent-Harness/
+├── docs/                   LEARNING_PLAN, PROGRESS, NOTES
+├── src/
+│   ├── phase0/agent.ts     frozen snapshot: the &lt;150-line agent
+│   ├── llm/                provider wrapper, retries, token + cost counting
+│   ├── loop/               agent loop, stop conditions, step limits
+│   ├── tools/              tool registry, schemas, individual tools
+│   ├── context/            prompt assembly, truncation, summarization
+│   ├── memory/             session state, persistent memory store
+│   ├── safety/             permissions, sandboxing, input/output guards
+│   ├── verify/             verification loops, critics, test runners
+│   ├── orchestration/      planner, sub-agents, handoffs
+│   ├── observability/      structured logs, traces, metrics
+│   ├── server/             HTTP API (health, run endpoint)
+│   └── cli.ts              local entry point
+├── tests/                  unit (fake LLM) + integration
+├── evals/                  tasks/, runner.ts, results/
+├── drills/                 one script per failure drill
+├── deploy/                 Dockerfile, docker-compose.yml, monitoring/
+├── .github/workflows/      CI: lint, test, eval gate, deploy
+└── package.json  tsconfig.json  .env.example  .nvmrc  .gitignore</pre></div>
+    <div id="arch"></div>
+  </section>
+
+  <section id="s5">
+    <h2><span class="n">5</span>Words you will meet first</h2>
+    <p class="note">Each phase also defines its own new terms the first time they appear.</p>
+    <div class="rows" id="glossary"></div>
+  </section>
+
+  <section id="s6">
+    <h2><span class="n">6</span>The phases</h2>
+    <p class="note">The matrix shows which earlier phases each phase reuses. The bar below it is sized by estimated hours. Open a phase to see its lesson; each one has a flow diagram of the mechanism it adds. Row numbers like 6.3.2 point at the exact part.</p>
+    <div id="depMap"></div>
+    <div>
+      <div class="bar" id="bar"></div>
+      <div class="barcap"><span>Phase 0</span><span id="barTotal"></span><span>Phase 10</span></div>
+    </div>
+    <div class="controls">
+      <button class="primary" id="expand" type="button">Expand all</button>
+      <button id="collapse" type="button">Collapse all</button>
+    </div>
+    <div class="phases" id="phases"></div>
+  </section>
+
+  <section id="s7">
+    <h2><span class="n">7</span>Progress checklist</h2>
+    <p class="note">Ticks are saved in this browser only. The source of truth is <code>docs/PROGRESS.md</code>.</p>
+    <div class="prog" aria-hidden="true"><i id="progFill"></i></div>
+    <div class="note mono" id="progText"></div>
+    <div id="checklist"></div>
+  </section>
+
+  <section id="s8">
+    <h2><span class="n">8</span>Open questions for you</h2>
+    <div class="rows" id="asks"></div>
+  </section>
+</div>
+
+<script>
+var PILLARS = [
+  ['The loop', 'Calls the model, runs what it asks for, feeds the result back, and knows when to stop.', 'The agent runs forever, or stops at a random point.', 0],
+  ['Tools', 'The actions the model is allowed to request, each described so the model uses it correctly.', 'The model can only talk. Or it misuses tools and gets confusing errors.', 2],
+  ['Context', 'Decides what the model sees on each call, since it can only read a limited amount.', 'Long tasks overflow, or the model forgets the original goal.', 3],
+  ['Memory and state', 'Saves progress and facts so a crash or a new session does not start from zero.', 'Every restart loses all work. Nothing is learned across sessions.', 4],
+  ['Safety', 'Limits what the agent can touch and treats everything it reads as untrusted.', 'A file it reads can talk it into deleting things or leaking secrets.', 5],
+  ['Verification', 'Checks the work with tests or rules instead of trusting the model\'s word.', 'The agent says "done" when the result is wrong.', 6],
+  ['Observability', 'Records every step, so you can measure quality and debug any run later.', 'You cannot tell if a change made the agent better or worse.', 8]
+];
+var ASSUMPTIONS = [
+  ['Time budget', 'About 6 hours per week, so roughly 12 weeks for the ~68 hours below. Each phase has its own estimate; give me your real numbers and I will re-pace.'],
+  ['Environment', 'Node v26.13.0 (LTS, installed through nvm and pinned in <code>.nvmrc</code>), Docker 24.0.6, empty repo, not yet a git repo.'],
+  ['Stack', 'TypeScript on Node. The model comes from OpenRouter (a hosted, OpenAI-compatible API) through the <code>openai</code> npm package. <span class="tag">tradeoff</span> Free <code>:free</code> models cost nothing but are rate-limited and differ in tool-calling support; <code>llm/</code> is a thin wrapper, so switching to Ollama or another provider is a config change. Base URL, key and model name come from env vars, never hardcoded. <span class="tag">verify</span> Free model names, limits and SDK shapes change often; I check OpenRouter's docs before Phase 0 code.'],
+  ['API key and cost', 'You need an OpenRouter API key in <code>.env</code> (never committed) and a free model that supports tool calling. Evals may hit free-tier rate limits, or cost a little if you add credit. A request and cost cap arrives in Phase 8. Free models may log prompts, so never send secrets.']
+];
+var GLOSSARY = [
+  ['Agent', 'A program that calls an LLM in a loop. The LLM decides which actions (tools) to take until the task is done.'],
+  ['Harness', 'Everything around the LLM: loop, tools, context handling, memory, safety checks, logging. The LLM is the engine; the harness is the car.'],
+  ['Tool', 'A function the LLM can ask the harness to run, such as reading a file. The model only emits a request; your code runs it.'],
+  ['Context window', 'The maximum text the LLM can see in one call. Instructions, history and tool results must all fit.'],
+  ['Eval', 'An automated test for LLM behavior: fixed tasks plus a scoring rule, run repeatedly because outputs vary.'],
+  ['Trace', 'A recorded timeline of one agent run: each LLM call, tool call, timing and cost.']
+];
+var RULES = [
+  ['I build one phase at a time and advance only when you say "next".'],
+  ['I write all code, config and tests. You review, run and ask questions. Each code step is small enough to read in a few minutes.'],
+  ['The failure drill always runs <b>before</b> its fix, so you see the problem first.'],
+  ['I ask before installing dependencies, running destructive commands, deviating from the plan, and before any <code>git add</code>, commit or push.'],
+  ['Choices are labeled <span class="tag">tradeoff</span> (a judgment call with a real downside) or <span class="tag">best practice</span> (the usual right answer). Anything that may change soon is flagged <span class="tag">verify</span>.']
+];
+var ASKS = [
+  ['Your real hours per week and number of weeks?'],
+  ['OK to use OpenRouter, with your free key (and maybe a small credit balance for longer evals)?'],
+  ['OK to run <code>git init</code> and work on a feature branch? I will not stage or commit without asking.'],
+  ['Deployment target for Phase 10 (can wait): a single-container platform like Fly.io or Cloud Run (no GPU needed, since the model is hosted), or Kubernetes?']
+];
+
+/* Each phase: plain, why, terms, how (steps of the idea), code (steps we build), drill, evalx, q, cmd, expect, done */
+var PHASES = [
+  { t: 'Smallest working agent', h: 3, g: 'One file, under 150 lines, that really works.',
+    plain: 'An agent is a loop. You send the model a task and a list of tools. If the model replies "please run this tool", you run it, add the result to the conversation, and ask again. When the model replies with plain text instead, you are done. Phase 0 builds only that, in one file, so nothing is hidden behind a framework.',
+    why: 'Frameworks hide the loop. If you see the loop with your own eyes first, every later phase is just "a better version of this piece".',
+    terms: [['Message', 'One turn of the conversation, with a role (user or assistant) and content.'], ['Tool call', 'The model\'s structured request to run a named tool with given arguments. It is only text; nothing runs yet.'], ['Tool result', 'What your code sends back after running the tool.'], ['Max-step limit', 'A hard cap on loop rounds, so a confused model cannot run forever.']],
+    how: ['Send the task plus tool descriptions to the model.', 'Read the reply. Plain text means finished.', 'If it asks for a tool, your code runs it.', 'Append the result as a new message and call the model again.', 'Stop when finished or when the step limit is reached.'],
+    code: [['Scaffold the project', 'package.json, tsconfig.json, .env.example, .gitignore. You learn how the API key stays out of git.'], ['Call the model once', 'Send one message, print the reply. You learn what a message looks like.'], ['Describe two tools', '<code>read_file</code> and <code>list_dir</code> with their argument schemas. You learn what the model actually sees.'], ['Add the loop', 'Run requested tools and feed results back. You learn the core of every agent.'], ['Add the step limit', 'Cap rounds at 10 (done after the drill shows why).']],
+    drill: 'First I set the limit to 1000 and give a prompt designed to loop, so you watch it burn calls. Then I ask it to read <code>../../etc/hosts</code> and it succeeds, escaping the working directory. After you see both, I add the step cap and a path check. <span class="tag">best practice</span>',
+    evalx: 'Three tasks you judge by eye, such as "what is the name field in package.json?". Pass means a correct answer in under 10 steps. Automated evals arrive in Phase 8.',
+    q: ['Who actually runs the tool, the model or your code?', 'What happens if the model never says it is done?', 'Why are tool results appended as messages?', 'What would you lose by dropping the step limit?', 'Why keep the file under 150 lines?'],
+    cmd: 'npx tsx src/phase0/agent.ts "What is the name field in package.json?"',
+    expect: 'You see each tool call logged, then a final answer naming the package. It stops by itself.',
+    done: 'The agent answers the three tasks, the step cap stops the runaway prompt, and the path escape is blocked.' },
+  { t: 'The agent loop, done properly', h: 6, g: 'Turn the quick loop into code you can test and trust.',
+    plain: 'Phase 0 works but cannot be tested without spending money, and it only stops one way. Here the loop becomes a small, well-named module that always ends for a stated reason, and the model call is wrapped so tests can use a pretend model.',
+    why: 'You cannot improve what you cannot test. A fake model makes tests free, fast and repeatable, and explicit stop reasons make failures understandable.',
+    terms: [['Stop reason', 'The named cause a run ended: <code>done</code>, <code>max_steps</code>, <code>budget</code> or <code>error</code>.'], ['Fake LLM', 'A stand-in that returns scripted replies, so tests need no network or money.'], ['Dependency injection', 'Passing the model into the loop instead of the loop creating it, so tests can pass the fake.'], ['Backoff', 'Waiting longer after each failed retry so you do not hammer a struggling API.'], ['Token', 'The unit the model reads and bills in, roughly three quarters of a word.']],
+    how: ['The loop receives a model object, a tool list and limits.', 'Each round it checks limits before calling the model.', 'The model wrapper retries temporary errors with backoff.', 'Every exit returns a result carrying its stop reason and token use.'],
+    code: [['Wrap the model call', '<code>llm/</code> with retries, timeout and token counting.'], ['Define the result type', 'A stop reason and usage on every run.'], ['Extract the loop', '<code>loop/</code> takes the model as a parameter.'], ['Write the fake LLM', 'Scripted replies for tests.'], ['Write the tests', 'One test per stop reason using Vitest. <span class="tag">tradeoff</span> Vitest is fast and TypeScript-friendly; Jest also works. <span class="tag">verify</span> current versions.']],
+    drill: 'Run the Phase 0 code against a fake that always asks for a tool, then against one that throws a 429 (rate limit). You see it hang in one case and crash in the other.',
+    evalx: 'Five scripted fake-model scenarios, each expected to end with a specific stop reason. Pass means all five match.',
+    q: ['Why test with a fake LLM instead of the real one?', 'What are the stop reasons, and who decides each?', 'Why retry with backoff instead of immediately?', 'What does a token budget protect you from?'],
+    cmd: 'npm test -- loop',
+    expect: 'A list of passing tests, one per stop reason, finishing in about a second with no API calls.',
+    done: 'All stop reasons are reachable and tested, and a flaky API no longer crashes a run.' },
+  { t: 'Tool design', h: 6, g: 'Tools the model uses correctly, and errors it can recover from.',
+    plain: 'The model never sees your code. It sees only each tool\'s name, description and argument shape. Those words are the tool\'s user interface, so writing them well, and returning clear errors, decides whether the agent succeeds.',
+    why: 'Most agent failures are tool failures: vague descriptions, bad arguments, huge outputs, or errors the model cannot understand.',
+    terms: [['Schema', 'A strict description of valid arguments: names, types and which are required.'], ['Validation', 'Checking arguments against the schema before running anything.'], ['Allowlist', 'A list of what is permitted, with everything else refused.'], ['Structured error', 'An error returned as data the model can read and act on.']],
+    how: ['Register each tool with a name, description and schema.', 'Validate the model\'s arguments before running.', 'Run the tool, and cap how much output comes back.', 'On failure, return a readable error as a result instead of crashing.'],
+    code: [['Build the tool registry', 'One place that lists tools and runs them.'], ['Add Zod validation', 'Bad arguments become clear messages. <span class="tag">tradeoff</span> One more dependency, much better errors.'], ['Add the structured error shape', 'Success and failure share one format.'], ['Add the tools', '<code>read_file</code>, <code>list_dir</code>, <code>write_file</code>, <code>run_shell</code> (allowlisted commands), <code>search_text</code>.'], ['Cap output size', 'Long results are cut with a note saying so.']],
+    drill: 'I give a tool a vague description so the model passes wrong arguments, return a 5 MB file that blows the context, and let one tool throw a raw stack trace. You see the agent derail each time.',
+    evalx: 'Eight tasks that each need a specific tool with valid arguments. Pass rate is recorded as your first baseline number.',
+    q: ['Why return errors as data instead of throwing?', 'How does a tool description change behavior?', 'Why cap tool output size?', 'Which validation catches model mistakes, and which catches attacker input?'],
+    cmd: 'npm test -- tools && npm run eval -- --suite tools',
+    expect: 'Unit tests pass, then the eval prints a pass rate such as 7/8 and saves it as the baseline.',
+    done: 'Bad arguments produce helpful errors, big outputs are truncated, and the baseline is saved.' },
+  { t: 'Context management', h: 7, g: 'Keep long runs inside the model\'s reading limit.',
+    plain: 'The model can only read so much at once. Every message and tool result is re-sent on each call, so a long task eventually overflows. Context management decides what to keep, shorten or drop, while making sure the task itself is never lost.',
+    why: 'Without it, long tasks crash or the agent silently forgets what it was asked to do.',
+    terms: [['Context budget', 'How many tokens you let the prompt use.'], ['Truncation', 'Cutting old or large content short.'], ['Compaction', 'Replacing old turns with a short summary.'], ['Pinned content', 'Text that is never dropped, such as the task.'], ['Prompt caching', 'Reusing an unchanged prompt prefix to save cost and time. <span class="tag">verify</span> current provider behavior.']],
+    how: ['Count tokens before each call.', 'If over budget, shorten old tool results first.', 'If still over, summarize the oldest turns.', 'Always keep the pinned task and instructions.'],
+    code: [['Add token counting', 'Know the size before you send.'], ['Build prompt assembly', 'System prompt, pinned task, then history.'], ['Truncate old tool results', 'Cheapest saving first.'], ['Summarize old turns', 'A model call that compresses history.'], ['Add the pinned section', 'Guarantee the task survives.']],
+    drill: 'A 40-step task overflows the window, and a second run drops its early messages so the agent forgets its original instruction.',
+    evalx: 'A fact stated at step 1 must be used correctly at step 30. Measure with and without compaction; pass means no drop in correctness.',
+    q: ['What gets dropped first, and why?', 'What is the risk of summarizing?', 'Why pin the task?', 'How do you measure that compaction did not hurt quality?'],
+    cmd: 'npm run eval -- --suite context',
+    expect: 'A table comparing correct answers with and without compaction on the long task.',
+    done: 'A 40-step task finishes, and the step-1 fact is still used correctly at step 30.' },
+  { t: 'Memory and state', h: 6, g: 'Survive crashes and remember across sessions.',
+    plain: 'State is where the run is right now; memory is what is kept for later. Saving state to disk lets you resume after a crash, and a small memory store lets the agent carry useful facts into a new session.',
+    why: 'Real agents run long enough to fail midway. Without saved state you lose everything, and without memory every session starts blank.',
+    terms: [['Checkpoint', 'A saved snapshot of a run you can resume from.'], ['Short-term memory', 'What is in the current conversation.'], ['Long-term memory', 'Facts stored on disk for future sessions.'], ['Idempotent', 'Safe to repeat without extra side effects.']],
+    how: ['After each step, write the run state to disk.', 'On start, look for an unfinished run and resume it.', 'Mark side-effecting steps done so they are not repeated.', 'The agent saves or looks up facts through memory tools.'],
+    code: [['Define the state shape', 'What a run needs in order to resume.'], ['Save a checkpoint each step', 'JSON files on disk.'], ['Resume by run ID', 'Load and continue.'], ['Add the memory store', 'JSON first. <span class="tag">tradeoff</span> Files are simplest; SQLite adds querying later.'], ['Add memory tools', 'Save, search and forget.']],
+    drill: 'Kill the process halfway and watch all progress vanish. Then I plant a wrong saved fact and show the agent trusting it.',
+    evalx: 'Run, kill at step N, resume. Pass means the same final result with no repeated side effects. Plus a recall test across two sessions.',
+    q: ['What exactly is saved in a checkpoint?', 'How do you avoid re-running side-effecting tools on resume?', 'When should memory be forgotten or corrected?', 'Where can memory be poisoned?'],
+    cmd: 'npm run drill:crash-resume',
+    expect: 'The script kills a run, resumes it, and prints that both runs reached the same answer.',
+    done: 'A killed run resumes correctly and memory persists between two sessions.' },
+  { t: 'Safety and permissions', h: 7, g: 'Limit what the agent can do, and distrust what it reads.',
+    plain: 'The agent reads files and web text that someone else wrote. If that text says "ignore your rules and delete everything", a naive agent may obey. Safety means the harness enforces limits in code, because asking the model nicely is not a security boundary.',
+    why: 'An agent with tools can cause real damage, and prompt injection is the most common way it is steered into doing so.',
+    terms: [['Prompt injection', 'Instructions hidden in data the agent reads.'], ['Least privilege', 'Give only the access a task needs.'], ['Sandbox', 'A restricted space where actions cannot reach the rest of the machine.'], ['Human approval', 'Pausing so a person confirms a risky action.'], ['Redaction', 'Removing secrets from logs and outputs.']],
+    how: ['Every tool has a level: allow, ask or deny.', 'Risky calls pause for your approval.', 'Paths and commands are checked in code.', 'Tool output is labeled as untrusted data.', 'Logs are scrubbed of secrets.'],
+    code: [['Add permission levels', 'Per tool, in a policy file.'], ['Add the approval prompt', 'The run pauses until you answer.'], ['Sandbox paths and commands', 'Checks live in code, not in the prompt.'], ['Redact secrets', 'Keys never reach logs.'], ['Add injection fixtures', 'Files that try to hijack the agent.']],
+    drill: 'In a throwaway temp folder, a file tells the agent to run <code>rm</code> and read <code>.env</code>. You watch the unprotected agent comply; then I add the protections and rerun.',
+    evalx: 'A safety suite of injection and escape attempts. Target: zero violations. This becomes a hard gate in CI later.',
+    q: ['Why is prompt wording not a security boundary?', 'What does least privilege look like for each tool?', 'Where does untrusted text enter the context?', 'What should require human approval?'],
+    cmd: 'npm run eval -- --suite safety',
+    expect: 'Every attack is listed as blocked, with a final count of 0 violations.',
+    done: 'All injection and escape attempts are blocked, and risky actions ask first.' },
+  { t: 'Verification loops', h: 6, g: 'Check the work with evidence, not the model\'s word.',
+    plain: 'Models say "done" with great confidence even when they are wrong. A verification loop runs something objective, like tests or a type check, and feeds any failure back to the agent for another try, within a limit.',
+    why: 'It turns "looks right" into "was checked", which is the biggest reliability gain available for tasks that can be checked.',
+    terms: [['Verifier', 'Code that checks a result and returns pass or fail with a reason.'], ['Ground truth', 'An objective answer, such as a passing test.'], ['LLM-as-critic', 'Using a second model call to review the first. <span class="tag">tradeoff</span> Cheap, but also fallible.'], ['Bounded retry', 'A limit on fix attempts, so it cannot loop forever.']],
+    how: ['The agent finishes a draft.', 'A verifier runs and returns pass or fail with details.', 'On fail, the details go back to the agent.', 'Repeat until pass or the retry limit.'],
+    code: [['Define the verifier interface', 'Pass or fail plus a reason.'], ['Write a test-running verifier', 'Runs a real test command.'], ['Write a schema verifier', 'Checks output shape.'], ['Wire the retry loop', 'Failure text feeds the next attempt.'], ['Add an optional critic', 'Only where no programmatic check exists.']],
+    drill: 'A bug-fix task where the agent confidently claims success, but a hidden test fails. You see it pass without verification.',
+    evalx: 'Small buggy files with hidden tests. Compare pass rate with and without the verify loop; pass means a clear improvement.',
+    q: ['Why is a test result better evidence than the model\'s confidence?', 'How many verify retries are enough?', 'What can a critic model miss?', 'How do you stop infinite fix loops?'],
+    cmd: 'npm run eval -- --suite verify',
+    expect: 'Two pass rates side by side, with the verify loop clearly higher.',
+    done: 'The verified agent beats the unverified one on the buggy-file tasks.' },
+  { t: 'Orchestration', h: 6, g: 'Split work across agents only when it pays off.',
+    plain: 'Sometimes one agent is overloaded by a big job. An orchestrator makes a plan and hands pieces to worker agents, each with its own small context and limited tools, then combines their results.',
+    why: 'Workers keep each context small and focused, and independent pieces can run at the same time. But more agents means more cost and more ways to fail.',
+    terms: [['Orchestrator', 'The agent that plans and delegates.'], ['Worker (sub-agent)', 'An agent that does one narrow piece.'], ['Context isolation', 'Each worker sees only what it needs.'], ['Handoff', 'The format workers use to return results.']],
+    how: ['The orchestrator splits the task into pieces.', 'Each piece goes to a worker with minimal context.', 'Independent pieces run in parallel.', 'Results come back in a fixed format and are combined.'],
+    code: [['Write the planner', 'Produces a list of subtasks.'], ['Write the worker runner', 'A fresh loop with narrow tools.'], ['Define the handoff format', 'A typed result.'], ['Run workers in parallel', 'Only for independent subtasks.'], ['Share one budget', 'Total spend stays capped.']],
+    drill: 'One agent given a big multi-file task runs out of context. Then a naive multi-agent version loses a result and double-edits a file.',
+    evalx: 'Summarize 5 files. Compare single-agent and orchestrated runs on quality, step count and cost. Pass means a clear, explainable win on at least one.',
+    q: ['When is a single agent better?', 'What does a sub-agent get to see?', 'How do failures in one worker propagate?', 'How is total cost bounded?'],
+    cmd: 'npm run eval -- --suite orchestration',
+    expect: 'A comparison table of single versus orchestrated runs.',
+    done: 'The orchestrated run completes, with results combined and spend capped.' },
+  { t: 'Evals and tracing', h: 7, g: 'Measure quality, and replay any run.',
+    plain: 'The same prompt can give different answers each time, so one good run proves nothing. Evals run many tasks many times and report a pass rate. Traces record every step of a run so you can see exactly what happened.',
+    why: 'This is how you know a change helped. It is also what lets CI block a change that makes the agent worse.',
+    terms: [['Trial', 'One run of one eval case. You run several, because outputs vary.'], ['Baseline', 'The saved pass rate you compare against.'], ['Regression', 'A drop in quality compared to the baseline.'], ['LLM-as-judge', 'A model that scores outputs. Useful but biased, so use sparingly.']],
+    how: ['Each case runs N times.', 'A scorer marks each trial pass or fail.', 'Pass rate and cost are compared to the baseline.', 'Every run writes a trace you can open.'],
+    code: [['Define the trace format', 'One JSON line per event, with a run ID.'], ['Write the trace viewer', 'A script that prints one run as a timeline.'], ['Write the eval runner', 'Cases, trials and scoring.'], ['Add the baseline and report', 'Flag regressions.'], ['Add a spend cap', 'The eval stops before it costs too much.']],
+    drill: 'I quietly make a prompt worse. One manual run looks fine, but the eval pass rate drops clearly.',
+    evalx: 'All earlier suites run through one command with a combined report. Pass means the report matches the baselines.',
+    q: ['Why run each case multiple times?', 'What is a regression, and how is it detected?', 'When is an LLM judge acceptable?', 'What belongs in a trace?'],
+    cmd: 'npm run eval:all -- --trials 3',
+    expect: 'A combined report with pass rate, cost and latency per suite, and any regressions marked.',
+    done: 'One command measures everything, and a deliberate regression is caught.' },
+  { t: 'Production hardening', h: 6, g: 'Behave well when things go wrong.',
+    plain: 'Real services face API outages, slow calls, floods of requests and shutdowns mid-run. Hardening makes each of those end in a defined, safe state instead of a hang or a mess.',
+    why: 'In production, failure is normal. The goal is to fail predictably and cheaply.',
+    terms: [['Timeout', 'A time limit on a call.'], ['Graceful shutdown', 'Finishing or saving current work before exiting.'], ['Idempotency key', 'A token so a retried request is not executed twice.'], ['Health check', 'An endpoint that reports whether the service is alive.'], ['Chaos test', 'Deliberately injecting failures to see what happens.']],
+    how: ['Requests get a timeout and cost limit.', 'Concurrency is capped.', 'A shutdown signal saves state and stops cleanly.', 'Logs are structured and redacted.'],
+    code: [['Add the HTTP server', '<code>/healthz</code> and <code>/run</code>.'], ['Validate config at startup', 'Fail early on missing settings.'], ['Add timeouts and cancellation', 'Per request.'], ['Add limits', 'Concurrency and daily cost.'], ['Add graceful shutdown', 'Handle SIGTERM.']],
+    drill: 'Simulate an API outage, slow responses and a flood of requests, and watch for hangs, memory growth and duplicated work.',
+    evalx: 'N concurrent runs with injected faults. Pass means every run ends in a defined state.',
+    q: ['What happens on SIGTERM mid-run?', 'Why a per-request budget?', 'Which errors are retryable?', 'What does a health check prove, and what does it not?'],
+    cmd: 'npm run drill:chaos',
+    expect: 'A summary listing each run\'s end state, with none stuck or duplicated.',
+    done: 'Every injected fault ends cleanly, and shutdown preserves in-flight work.' },
+  { t: 'Deployment', h: 8, g: 'Ship with gates, monitoring and an undo button.',
+    plain: 'Deployment packages the service in a container, tests it automatically on every change, blocks changes that lower eval quality, watches it live, and lets you roll back fast.',
+    why: 'It makes shipping repeatable and safe, and the eval gate stops quality regressions that normal tests miss.',
+    terms: [['Container image', 'A packaged, runnable copy of the app.'], ['CI/CD', 'Automatic testing and shipping on every change.'], ['Eval gate', 'A CI check that fails when eval quality drops.'], ['Rollback', 'Redeploying the previous good version.'], ['Secret store', 'The platform\'s safe place for keys.']],
+    how: ['A push triggers lint, type check and tests.', 'The eval gate compares against the baseline.', 'If everything passes, an image is built and deployed.', 'Metrics and alerts watch it live; a bad release is rolled back.'],
+    code: [['Write the Dockerfile', 'Multi-stage, small, non-root.'], ['Write docker-compose', 'Run it locally.'], ['Write the CI workflow', 'Lint, typecheck, tests, eval gate, image build.'], ['Deploy to your chosen platform', 'You pick the target when this phase starts. <span class="tag">tradeoff</span> A single-container platform is simpler than Kubernetes.'], ['Add monitoring and rollback', 'Error rate, latency and cost alerts, plus a rehearsed rollback.']],
+    drill: 'Push a deliberately bad prompt change and watch CI block it. Then deploy a broken build to staging and roll it back.',
+    evalx: 'A full pipeline run on a branch. Pass means the good change deploys and the bad change is blocked.',
+    q: ['Why gate on evals and not only unit tests?', 'How do you roll back, and how fast?', 'Where do secrets live?', 'Which three metrics would page you?'],
+    cmd: 'docker compose up --build -d && curl -s localhost:3000/healthz',
+    expect: 'The container starts and the health check returns an OK response. CI shows the gate passing or blocking.',
+    done: 'The pipeline ships good changes, blocks bad ones, and rollback is tested.' }
+];
+
+function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+function renderRows(el, sectionNo, data) {
+  el.innerHTML = data.map(function (r, i) {
+    var id = sectionNo + '.' + (i + 1);
+    var body = r.length === 2
+      ? '<div class="t">' + r[0] + '</div><div class="d">' + r[1] + '</div>'
+      : '<div class="t" style="font-weight:400">' + r[0] + '</div>';
+    return '<div class="row" id="r-' + id + '"><div class="id">' + id + '</div>' + body + '</div>';
+  }).join('');
+}
+renderRows(document.getElementById('rules'), 2, RULES);
+renderRows(document.getElementById('assumptions'), 3, ASSUMPTIONS);
+renderRows(document.getElementById('glossary'), 5, GLOSSARY);
+renderRows(document.getElementById('asks'), 8, ASKS);
+
+document.getElementById('pillars').innerHTML = PILLARS.map(function (p, i) {
+  return '<tr id="r-1.' + (i + 1) + '"><td><b>' + p[0] + '</b></td><td>' + p[1] + '</td><td>' + p[2] + '</td><td><a href="#r-6.' + p[3] + '">Phase ' + p[3] + '</a></td></tr>';
+}).join('');
+
+/* Diagrams. flow() draws a top-to-bottom flow on a fixed grid. Node kinds: h harness code, m model, n added in this phase, w failure. */
+var flowN = 0;
+function legend(kinds) {
+  var all = { h: ['', 'Harness code'], m: ['m', 'The model'], n: ['n', 'Added in this phase'], w: ['w', 'Failure or refusal'], x: ['x', 'Outside your code'] };
+  return '<div class="legend">' + kinds.map(function (k) { return '<span><i class="' + all[k][0] + '"></i>' + all[k][1] + '</span>'; }).join('') + '</div>';
+}
+function flow(spec) {
+  var NW = 220, NH = 44, GAP = 38, X0 = 50, CX = X0 + NW / 2, BX = 340, BW = 180, W = 530, n = spec.nodes.length;
+  var H = 24 + n * NH + (n - 1) * GAP, uid = 'ar' + (flowN++);
+  function y(i) { return 12 + i * (NH + GAP); }
+  function box(x, yy, w, nd) {
+    var two = !!nd.sub;
+    return '<g class="k-' + (nd.k || 'h') + '"><rect x="' + x + '" y="' + yy + '" width="' + w + '" height="' + NH + '" rx="8"/>' +
+      '<text x="' + (x + w / 2) + '" y="' + (yy + (two ? 19 : 27)) + '" text-anchor="middle">' + esc(nd.t) + '</text>' +
+      (two ? '<text class="sub" x="' + (x + w / 2) + '" y="' + (yy + 35) + '" text-anchor="middle">' + esc(nd.sub) + '</text>' : '') + '</g>';
+  }
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(spec.alt) + '" style="max-width:' + W + 'px"><defs><marker id="' + uid + '" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>';
+  var i, e;
+  for (i = 0; i < n - 1; i++) {
+    s += '<line class="edge" x1="' + CX + '" y1="' + (y(i) + NH) + '" x2="' + CX + '" y2="' + (y(i + 1) - 1) + '" marker-end="url(#' + uid + ')"/>';
+    e = spec.edges && spec.edges[i];
+    if (e) s += '<text class="lbl" x="' + (CX + 10) + '" y="' + (y(i) + NH + GAP / 2 + 4) + '">' + esc(e) + '</text>';
+  }
+  if (spec.back) {
+    var yl = y(n - 1) + NH / 2, yt = y(spec.back.to) + NH / 2;
+    s += '<path class="edge" d="M' + X0 + ' ' + yl + ' H22 V' + yt + ' H' + (X0 - 1) + '" marker-end="url(#' + uid + ')"/>' +
+      '<text class="lbl" text-anchor="middle" transform="translate(12 ' + ((yl + yt) / 2) + ') rotate(-90)">' + esc(spec.back.label) + '</text>';
+  }
+  if (spec.branch) {
+    var by = y(spec.branch.from);
+    s += '<line class="edge" x1="' + (X0 + NW) + '" y1="' + (by + NH / 2) + '" x2="' + (BX - 1) + '" y2="' + (by + NH / 2) + '" marker-end="url(#' + uid + ')"/>' +
+      '<text class="lbl" text-anchor="middle" x="' + ((X0 + NW + BX) / 2) + '" y="' + (by + NH / 2 - 6) + '">' + esc(spec.branch.label) + '</text>' +
+      box(BX, by, BW, spec.branch);
+  }
+  for (i = 0; i < n; i++) s += box(X0, y(i), NW, spec.nodes[i]);
+  return s + '</svg>';
+}
+function figure(id, label, svg, cap, kinds) {
+  return '<figure class="dg" id="r-' + id + '">' + (kinds ? legend(kinds) : '') + svg + '<figcaption><b>' + label + '</b> ' + cap + '</figcaption></figure>';
+}
+
+var FLOWS = [
+  { alt: 'Phase 0: the model replies with text or a tool request; your code runs the tool, appends the result, and the loop repeats until text or the step limit.',
+    nodes: [{ t: 'Task and tool list', k: 'h' }, { t: 'Model replies', k: 'm', sub: 'text, or a tool request' }, { t: 'Your code runs the tool', k: 'n', sub: 'path check and step cap' }, { t: 'Append result to messages', k: 'h' }],
+    edges: ['send', 'tool request', 'tool result'], back: { to: 1, label: 'next round' }, branch: { from: 1, label: 'plain text', t: 'Print answer, stop', k: 'h' },
+    cap: 'The model only asks. Your code runs the tool and feeds the result back. The loop ends on plain text or when the step cap is hit.' },
+  { alt: 'Phase 1: each round checks limits, calls the model with retries, runs tools and records usage; every exit carries a stop reason.',
+    nodes: [{ t: 'Check limits', k: 'n', sub: 'steps and tokens' }, { t: 'Call the model', k: 'n', sub: 'retry with backoff, timeout' }, { t: 'Run requested tools', k: 'h' }, { t: 'Record usage', k: 'n', sub: 'tokens used so far' }],
+    edges: ['', 'tool request', ''], back: { to: 0, label: 'next round' }, branch: { from: 0, label: 'over limit', t: 'Stop with a reason', sub: 'max_steps or budget', k: 'n' },
+    cap: 'The model is passed in, so tests can swap in a FakeLLM. Every exit returns a stop reason: done, max_steps, budget or error.' },
+  { alt: 'Phase 2: a tool request goes through the registry, argument validation, the tool, and an output cap; invalid arguments return an error the model can read.',
+    nodes: [{ t: 'Model requests a tool', k: 'm' }, { t: 'Registry looks it up', k: 'n', sub: 'one place lists all tools' }, { t: 'Validate arguments', k: 'n', sub: 'schema check before running' }, { t: 'Run the tool', k: 'h' }, { t: 'Cap the output size', k: 'n', sub: 'cut with a note if long' }, { t: 'Result back to the model', k: 'h' }],
+    edges: ['', '', 'valid', '', ''], branch: { from: 2, label: 'invalid', t: 'Error returned as data', sub: 'the model can fix and retry', k: 'n' },
+    cap: 'Bad arguments never reach the tool. They come back as a readable error, so the model can correct itself instead of the run crashing.' },
+  { alt: 'Phase 3: count tokens; if over budget, truncate old tool results, then summarize old turns, then build the prompt with the task pinned.',
+    nodes: [{ t: 'History grows each round', k: 'h' }, { t: 'Count tokens', k: 'n' }, { t: 'Truncate old tool results', k: 'n', sub: 'cheapest saving first' }, { t: 'Summarize oldest turns', k: 'n', sub: 'compaction, can lose detail' }, { t: 'Assemble final prompt', k: 'n', sub: 'task is pinned, never dropped' }, { t: 'Call the model', k: 'm' }],
+    edges: ['', 'over budget', 'still over', '', ''], branch: { from: 1, label: 'fits', t: 'Send history as is', k: 'h' },
+    cap: 'Savings are tried cheapest first. The task and system prompt are pinned, so even heavy compaction cannot make the agent forget its goal.' },
+  { alt: 'Phase 4: each step saves a checkpoint to disk; after a crash the run restarts by ID, loads the checkpoint, and skips side effects already done. Facts go to a memory store.',
+    nodes: [{ t: 'A step finishes', k: 'h' }, { t: 'Save checkpoint to disk', k: 'n', sub: 'state and finished side effects' }, { t: 'Process crashes', k: 'w' }, { t: 'Restart with the run ID', k: 'n' }, { t: 'Load the checkpoint', k: 'n' }, { t: 'Continue at the next step', k: 'n', sub: 'finished side effects are skipped' }],
+    edges: ['', 'kill', 'resume', '', ''], branch: { from: 1, label: 'save facts', t: 'Memory store', sub: 'kept for new sessions', k: 'n' },
+    cap: 'State is for resuming this run. Memory is for later sessions. Skipping finished side effects is what makes resuming safe.' },
+  { alt: 'Phase 5: a tool request passes policy, path and command checks, and optional human approval before running; deny refuses it; output is labeled untrusted.',
+    nodes: [{ t: 'Model requests a tool', k: 'm' }, { t: 'Policy: allow, ask, deny', k: 'n' }, { t: 'Path and command checks', k: 'n', sub: 'enforced in code' }, { t: 'Ask you if policy says ask', k: 'n' }, { t: 'Run the tool', k: 'h' }, { t: 'Label output untrusted', k: 'n', sub: 'secrets redacted from logs' }],
+    edges: ['', 'allowed', 'approved', '', ''], branch: { from: 1, label: 'deny', t: 'Refused, model told why', k: 'n' },
+    cap: 'Every limit sits in your code, between the model and the tool. A prompt that says "please be careful" is not one of these gates.' },
+  { alt: 'Phase 6: when the agent says it is done, a verifier runs; a pass accepts the result, a fail sends details back for another try, up to a limit.',
+    nodes: [{ t: 'Agent says it is done', k: 'm' }, { t: 'Run the verifier', k: 'n', sub: 'tests or schema check' }, { t: 'Send failure details back', k: 'n', sub: 'the agent tries again' }],
+    edges: ['claims success', 'fail'], back: { to: 0, label: 'up to N tries' }, branch: { from: 1, label: 'pass', t: 'Accept the result', k: 'h' },
+    cap: 'The agent does not get to decide it is finished. A test result does. The retry limit stops endless fix loops.' },
+  { alt: 'Phase 7: an orchestrator plans subtasks, starts workers that each own their files, workers run in parallel with fresh context, return typed handoffs, and the orchestrator combines them.',
+    nodes: [{ t: 'Orchestrator plans', k: 'm', sub: 'splits the task into subtasks' }, { t: 'Start workers', k: 'n', sub: 'each owns its own files' }, { t: 'Workers run in parallel', k: 'n', sub: 'fresh context, narrow tools' }, { t: 'Typed handoff results', k: 'n' }, { t: 'Orchestrator combines', k: 'm', sub: 'one shared budget' }],
+    edges: ['subtasks', '', 'results', ''],
+    cap: 'Each worker sees only its slice, which keeps contexts small. Owning separate files prevents two workers editing the same one.' },
+  { alt: 'Phase 8: an eval case runs N trials, each writes a trace and is scored, and the pass rate is compared with the baseline; a drop is flagged as a regression.',
+    nodes: [{ t: 'Eval case', k: 'h', sub: 'task and scoring rule' }, { t: 'Run N trials', k: 'n', sub: 'outputs vary run to run' }, { t: 'Write a trace per run', k: 'n' }, { t: 'Score every trial', k: 'n' }, { t: 'Compare with the baseline', k: 'n', sub: 'pass rate, cost, latency' }],
+    edges: ['', '', '', ''], branch: { from: 4, label: 'drop', t: 'Regression flagged', k: 'w' },
+    cap: 'One good run proves nothing. The pass rate over several trials, compared with a saved baseline, is what tells you a change helped or hurt.' },
+  { alt: 'Phase 9: a request is checked and limited, runs with a timeout, and always ends in a saved result or failure; a timeout marks it failed and logs it.',
+    nodes: [{ t: 'Request arrives', k: 'h' }, { t: 'Idempotency and config check', k: 'n' }, { t: 'Concurrency and cost limits', k: 'n' }, { t: 'Run with a timeout', k: 'n', sub: 'cancel if too slow' }, { t: 'Save result or failure', k: 'n', sub: 'always a defined end state' }],
+    edges: ['', 'under limit', '', ''], branch: { from: 3, label: 'timeout', t: 'Mark failed, log it', k: 'w' },
+    cap: 'Whatever goes wrong, a run ends in a known state. On SIGTERM the service saves in-flight runs before it exits.' },
+  { alt: 'Phase 10: a push runs lint and tests, then the eval gate; failing the gate blocks the deploy; a passing build is deployed and monitored, and an alert triggers a rollback.',
+    nodes: [{ t: 'Push a change', k: 'h' }, { t: 'Lint, types, unit tests', k: 'n' }, { t: 'Eval gate vs baseline', k: 'n' }, { t: 'Build image and deploy', k: 'n', sub: 'tagged with a version' }, { t: 'Watch errors, latency, cost', k: 'n' }],
+    edges: ['', 'pass', 'pass', ''], back: { to: 3, label: 'rollback' }, branch: { from: 2, label: 'fails', t: 'CI blocks, no deploy', k: 'w' },
+    cap: 'The eval gate catches quality drops that unit tests miss. Versioned images are what make rollback a quick redeploy.' }
+];
+
+var ONION = '<svg viewBox="0 0 600 400" role="img" aria-label="Nested layers: the model and the loop with tools, context, memory, verification and orchestration at the center, wrapped by safety, then observability, then production hardening and deployment." style="max-width:600px">' +
+  '<defs><marker id="arOn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>' +
+  '<rect class="ly0" x="10" y="10" width="580" height="380" rx="14"/><text class="lt" x="26" y="33">Phases 9, 10 · Hardening and deployment</text>' +
+  '<rect class="ly1" x="30" y="46" width="540" height="334" rx="12"/><text class="lt" x="46" y="69">Phase 8 · Evals and traces measure every step</text>' +
+  '<rect class="ly2" x="50" y="82" width="500" height="288" rx="10"/><text class="lt" x="66" y="105">Phase 5 · Safety gates every action</text>' +
+  '<rect class="ly3" x="70" y="118" width="460" height="238" rx="8"/><text class="lt" x="86" y="141">Phases 0, 1 · The loop</text>' +
+  [['Tools', 'Phase 2'], ['Context', 'Phase 3'], ['Memory', 'Phase 4'], ['Verify', 'Phase 6'], ['Orchestrate', 'Phase 7']].map(function (b, i) {
+    var x = 86 + i * 88;
+    return '<g class="k-h"><rect x="' + x + '" y="156" width="80" height="50" rx="8"/><text x="' + (x + 40) + '" y="177" text-anchor="middle">' + b[0] + '</text><text class="sub" x="' + (x + 40) + '" y="194" text-anchor="middle">' + b[1] + '</text></g>';
+  }).join('') +
+  '<line class="edge" x1="270" y1="210" x2="270" y2="262" marker-end="url(#arOn)"/><text class="lbl" x="260" y="240" text-anchor="end">prompt</text>' +
+  '<line class="edge" x1="330" y1="262" x2="330" y2="210" marker-end="url(#arOn)"/><text class="lbl" x="340" y="240">reply</text>' +
+  '<g class="k-m"><rect x="200" y="266" width="200" height="64" rx="8"/><text x="300" y="293" text-anchor="middle">The model</text><text class="sub" x="300" y="311" text-anchor="middle">text in, text or tool request out</text></g></svg>';
+
+var DEP_NAMES = ['Smallest agent', 'Agent loop', 'Tool design', 'Context', 'Memory and state', 'Safety', 'Verification', 'Orchestration', 'Evals and tracing', 'Hardening', 'Deployment'];
+var DEPS = { 1: [0], 2: [1], 3: [2], 4: [3], 5: [2, 4], 6: [1, 2], 7: [1, 3, 5], 8: [2, 3, 4, 5, 6, 7], 9: [1, 4, 8], 10: [8, 9] };
+function depMatrix() {
+  var LW = 150, C = 26, TOP = 30, W = LW + 11 * C + 10, H = TOP + 11 * C + 8;
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Dependency matrix: a dot means the row phase reuses the column phase. Phase 8 reuses phases 2 to 7; phase 10 reuses 8 and 9." style="max-width:' + W + 'px">';
+  var r, c;
+  for (c = 0; c < 11; c++) s += '<text class="lbl" x="' + (LW + c * C + C / 2) + '" y="18" text-anchor="middle">' + c + '</text>';
+  for (r = 0; r < 11; r++) {
+    var yy = TOP + r * C;
+    s += '<text x="' + (LW - 10) + '" y="' + (yy + 17) + '" text-anchor="end" style="font-size:12px"><tspan class="lbl">' + r + '</tspan> ' + esc(DEP_NAMES[r]) + '</text>';
+    for (c = 0; c < 11; c++) {
+      var used = DEPS[r] && DEPS[r].indexOf(c) >= 0;
+      s += '<rect class="' + (c === r ? 'diag' : 'cell') + '" x="' + (LW + c * C + 1.5) + '" y="' + (yy + 1.5) + '" width="' + (C - 3) + '" height="' + (C - 3) + '" rx="4"/>';
+      if (used) s += '<circle class="dot" cx="' + (LW + c * C + C / 2) + '" cy="' + (yy + C / 2) + '" r="6"/>';
+    }
+  }
+  return s + '</svg>';
+}
+
+
+function archSvg() {
+  var NH = 50, parts = [];
+  function b(x, y, w, t, sub, k) {
+    return '<g class="k-' + k + '"><rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + NH + '" rx="8"/><text x="' + (x + w / 2) + '" y="' + (y + (sub ? 22 : 30)) + '" text-anchor="middle">' + t + '</text>' +
+      (sub ? '<text class="sub" x="' + (x + w / 2) + '" y="' + (y + 38) + '" text-anchor="middle">' + sub + '</text>' : '') + '</g>';
+  }
+  function ln(x1, y1, x2, y2) { return '<line class="edge" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" marker-end="url(#arArch)"/>'; }
+  function lb(x, y, t, a) { return '<text class="lbl" x="' + x + '" y="' + y + '" text-anchor="' + (a || 'middle') + '">' + t + '</text>'; }
+  var s = '<svg viewBox="0 0 700 390" role="img" aria-label="Runtime architecture: a client calls the server, which starts the loop. The loop builds prompts through context and the llm wrapper to the model API, sends tool requests through safety to tools and on to files and shell, saves state to memory, hands results to verify, and may start more loops through orchestration. Observability records everything." style="max-width:700px">' +
+    '<defs><marker id="arArch" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>';
+  s += b(130, 40, 100, 'orchestration/', 'starts more loops', 'h') + b(270, 40, 100, 'context/', 'builds the prompt', 'h') + b(420, 40, 90, 'llm/', 'retries, budget', 'h') + b(560, 40, 90, 'Model API', 'outside your code', 'm');
+  s += b(10, 150, 80, 'Client', 'CLI or HTTP', 'x') + b(130, 150, 100, 'server/', 'timeouts, limits', 'h') + b(270, 150, 100, 'loop/', 'the agent loop', 'h');
+  s += b(10, 260, 100, 'verify/', 'tests, schema', 'h') + b(130, 260, 100, 'memory/', 'checkpoints', 'h') + b(270, 260, 100, 'safety/', 'policy, sandbox', 'h') + b(420, 260, 100, 'tools/', 'registry, checks', 'h') + b(560, 260, 90, 'Files, shell', 'the real world', 'x');
+  s += b(10, 335, 680, 'observability/  records a trace of every call above', '', 'h').replace('height="50"', 'height="38"').replace('y="365"', 'y="359"');
+  s += ln(90, 175, 128, 175) + lb(109, 168, 'run') + ln(230, 175, 268, 175) + lb(250, 168, 'task');
+  s += ln(320, 150, 320, 92) + lb(326, 125, 'messages', 'start') + ln(370, 65, 418, 65) + lb(394, 59, 'prompt') + ln(510, 65, 558, 65) + lb(534, 59, 'call');
+  s += '<path class="edge" d="M230 65 H250 V160 H268" marker-end="url(#arArch)"/>' + lb(246, 120, 'spawns', 'end');
+  s += ln(320, 200, 320, 258) + lb(326, 232, 'tool request', 'start') + ln(370, 285, 418, 285) + lb(394, 279, 'allowed') + ln(520, 285, 558, 285) + lb(540, 279, 'run');
+  s += '<path class="edge" d="M285 200 V230 H60"/>' + ln(180, 230, 180, 258) + lb(186, 248, 'save state', 'start') + ln(60, 230, 60, 258) + lb(66, 248, 'check', 'start');
+  return s + '</svg>';
+}
+
+document.getElementById('onion').innerHTML = figure('1.8', 'Figure 1.8', ONION, 'Inner layers do the work; outer layers contain the damage and measure it. Each phase adds one layer, starting from the loop and the model.');
+document.getElementById('oneRun').innerHTML = figure('1.9', 'Figure 1.9', flow({
+  alt: 'One request through the finished harness: build the prompt, model replies, safety check, run the tool, save state and trace, repeat; a plain-text reply goes to verification and then done.',
+  nodes: [{ t: 'Task arrives', k: 'h', sub: 'command line or HTTP request' }, { t: 'Assemble the prompt', k: 'h', sub: 'Phase 3 · context' }, { t: 'Model replies', k: 'm', sub: 'text, or a tool request' }, { t: 'Check it is allowed', k: 'h', sub: 'Phase 5 · safety' }, { t: 'Run the tool', k: 'h', sub: 'Phase 2 · tools' }, { t: 'Save state, write trace', k: 'h', sub: 'Phases 4 and 8' }],
+  edges: ['', 'prompt', 'tool request', 'allowed', 'result'], back: { to: 1, label: 'next round' }, branch: { from: 2, label: 'plain text', t: 'Verify, then finish', sub: 'Phase 6 · verification', k: 'h' }
+}), 'One request through the finished harness, with the phase that builds each step. Phase 0 is only the model, tool and loop parts of this.', ['h', 'm']);
+document.getElementById('arch').innerHTML = figure('4.1', 'Figure 4.1', archSvg(), 'Who talks to whom at run time. The loop is the hub: it asks context/ for the prompt, sends tool requests through safety/ before tools/ run, saves state to memory/, and hands finished work to verify/. Replies and results travel back along the same lines. Observability watches every box.', ['h', 'm', 'x']);
+document.getElementById('lessonFlow').innerHTML = figure('2.6', 'Figure 2.6', flow({
+  alt: 'The five stages of every phase: learn, code along, break it, prove it, check; then you say next.',
+  nodes: [{ t: 'Learn', k: 'h', sub: 'plain-language idea, no code' }, { t: 'Code along', k: 'h', sub: 'small steps you can read or type' }, { t: 'Break it', k: 'w', sub: 'the failure drill runs first' }, { t: 'Prove it', k: 'n', sub: 'fix, tests, eval, proof command' }, { t: 'Check', k: 'h', sub: '3 to 5 questions, update docs' }],
+  edges: ['', 'build the plain version', 'add the fix', ''], back: { to: 0, label: 'you say "next"' }
+}), 'Every phase follows this path. The problem is shown before its fix exists, and nothing moves on until you say "next".', ['h', 'w', 'n']);
+document.getElementById('depMap').innerHTML = '<div style="display:flex;flex-direction:column;gap:10px">' +
+  figure('6.11', 'Figure 6.11', depMatrix(), 'A dot means the row phase reuses the column phase. Phase 8 reuses the small eval runners from phases 2 to 7. Phases 9 and 10 sit on top of everything.') + '</div>';
+
+var total = PHASES.reduce(function (a, p) { return a + p.h; }, 0);
+document.getElementById('barTotal').textContent = total + ' h total';
+document.getElementById('bar').innerHTML = PHASES.map(function (p, i) {
+  return '<a href="#r-6.' + i + '" style="--h:' + p.h + '" title="Phase ' + i + ': ' + p.t + ' (' + p.h + ' h)"><span>' + i + '</span></a>';
+}).join('');
+
+function field(id, cls, label, sub, html) {
+  return '<div class="f ' + cls + '" id="r-' + id + '"><div class="lab">' + label + '<small>' + sub + '</small></div><div class="val">' + html + '</div></div>';
+}
+function list(items, cls) { return '<' + (cls ? 'ol class="' + cls + '"' : 'ul') + '>' + items.map(function (x) { return '<li>' + x + '</li>'; }).join('') + '</' + (cls ? 'ol' : 'ul') + '>'; }
+
+document.getElementById('phases').innerHTML = PHASES.map(function (p, i) {
+  var b = 'r-6.' + i;
+  var id = '6.' + i + '.';
+  var k = 0;
+  function nid() { k++; return id + k; }
+  var f = FLOWS[i];
+  return '<details class="phase" id="' + b + '"' + (i === 0 ? ' open' : '') + '>' +
+    '<summary><span class="pn">' + i + '</span><span class="pt">' + p.t + '</span><span class="pg">' + p.g + '</span>' +
+    '<span class="hrs">' + p.h + ' h</span><span class="chev" aria-hidden="true"></span></summary>' +
+    '<div class="pbody">' +
+    '<div class="stage">Stage 1 · Learn</div>' +
+    field(nid(), '', 'In plain words', '', '<p>' + p.plain + '</p>') +
+    field(nid(), '', 'Why it matters', '', '<p>' + p.why + '</p>') +
+    field(nid(), '', 'New terms', '', '<dl>' + p.terms.map(function (t) { return '<div><dt>' + t[0] + '</dt><dd>' + t[1] + '</dd></div>'; }).join('') + '</dl>') +
+    field(nid(), '', 'How it works', '', list(p.how, 'steps-plain')) +
+    field(nid(), '', 'Flow', '', '<figure class="dg">' + flow(f) + '<figcaption>' + f.cap + '</figcaption></figure>' + legend(['h', 'm', 'n', 'w'])) +
+    '<div class="stage">Stage 2 · Code along</div>' +
+    field(nid(), '', 'We build, in order', '', '<ol class="steps">' + p.code.map(function (c) { return '<li><div><b>' + c[0] + '</b><span>' + c[1] + '</span></div></li>'; }).join('') + '</ol>') +
+    '<div class="stage w">Stage 3 · Break it</div>' +
+    field(nid(), 'drill', 'Failure drill', 'run first', '<p>' + p.drill + '</p>') +
+    '<div class="stage">Stage 4 · Prove it</div>' +
+    field(nid(), '', 'Eval', '', '<p>' + p.evalx + '</p>') +
+    field(nid(), '', 'Proof command', '', '<div class="cmd"><pre>' + esc(p.cmd) + '</pre><button type="button" data-copy="' + i + '">Copy</button></div><p class="expect"><b>You should see:</b> ' + p.expect + '</p>') +
+    field(nid(), '', 'Done when', '', '<p>' + p.done + '</p>') +
+    '<div class="stage">Stage 5 · Check</div>' +
+    field(nid(), '', 'Questions', '', list(p.q)) +
+    '</div></details>';
+}).join('');
+
+var all = function () { return Array.prototype.slice.call(document.querySelectorAll('details.phase')); };
+document.getElementById('expand').onclick = function () { all().forEach(function (d) { d.open = true; }); };
+document.getElementById('collapse').onclick = function () { all().forEach(function (d) { d.open = false; }); };
+function openTarget() {
+  var id = decodeURIComponent(location.hash.slice(1));
+  var el = id && document.getElementById(id);
+  if (!el) return;
+  var d = el.closest ? el.closest('details.phase') : null;
+  if (d) d.open = true;
+  el.scrollIntoView({ block: 'start' });
+}
+window.addEventListener('hashchange', openTarget);
+document.addEventListener('click', function (e) {
+  var a = e.target.closest && e.target.closest('a[href^="#"]');
+  if (a && a.getAttribute('href') === location.hash) openTarget();
+  var c = e.target.closest && e.target.closest('button[data-copy]');
+  if (c) {
+    var text = PHASES[+c.getAttribute('data-copy')].cmd;
+    var done = function () { c.textContent = 'Copied'; setTimeout(function () { c.textContent = 'Copy'; }, 1500); };
+    var pre = c.parentNode.querySelector('pre');
+    var fallback = function () { var r = document.createRange(); r.selectNodeContents(pre); var s = getSelection(); s.removeAllRanges(); s.addRange(r); c.textContent = 'Selected'; };
+    try { navigator.clipboard.writeText(text).then(done, fallback); } catch (err) { fallback(); }
+  }
+});
+
+var ITEMS = [{ t: 'Plan approved', link: 's8', lab: '§8' }].concat(PHASES.map(function (p, i) {
+  return { t: 'Phase ' + i + ': ' + p.t + ' (' + p.h + ' h)', link: 'r-6.' + i, lab: '6.' + i };
+}));
+var KEY = 'agent-harness-plan-checks';
+var saved = {};
+try { saved = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { saved = {}; }
+document.getElementById('checklist').innerHTML = ITEMS.map(function (it, i) {
+  var id = '7.' + (i + 1);
+  return '<div class="check" id="r-' + id + '"><span class="id">' + id + '</span>' +
+    '<input type="checkbox" id="chk' + i + '"' + (saved[i] ? ' checked' : '') + '>' +
+    '<label for="chk' + i + '">' + it.t + '</label>' +
+    '<a class="go" href="#' + it.link + '">' + it.lab + '</a></div>';
+}).join('');
+function updateProgress() {
+  var boxes = document.querySelectorAll('#checklist input');
+  var n = 0;
+  boxes.forEach(function (b) { if (b.checked) n++; });
+  document.getElementById('progFill').style.width = (100 * n / boxes.length) + '%';
+  document.getElementById('progText').textContent = n + ' of ' + boxes.length + ' done';
+}
+document.getElementById('checklist').addEventListener('change', function (e) {
+  var i = e.target.id.replace('chk', '');
+  saved[i] = e.target.checked;
+  try { localStorage.setItem(KEY, JSON.stringify(saved)); } catch (err) { /* storage unavailable */ }
+  updateProgress();
+});
+updateProgress();
+openTarget();
+</script>
+
+<!-- revision 3: OpenRouter provider -->
