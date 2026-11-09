@@ -8,18 +8,18 @@ A TypeScript project for learning agent harness engineering: the runtime around 
 
 ## Branching and PR rules
 
-Every `code` step in the plan is one branch and one pull request. Branch names follow the plan's step numbers:
+Every `code` step in the plan is one branch and one pull request. Branch names start with a two-digit sequence number that counts up across the whole repo, so the branch list sorts in the order the work happened:
 
 ```
-phase-<N>/<N.S>-<short-slug>
+<NN>-phase-<P>-<short-slug>
 ```
 
-Examples: `phase-0/0.2-scaffold-project`, `phase-1/1.3-agent-loop`, `phase-10/10.6-ci-eval-gate`.
+Examples: `01-init`, `02-phase-0-scaffold-project`, `03-phase-0-call-model-once`, `04-phase-0-tools-and-loop`. The next branch always takes the next free number, whatever phase it belongs to.
 
 1. Branch from `main`. One step per branch; never commit directly to `main`.
-2. Open one PR per branch into `main`. The PR title starts with the step number, e.g. `1.3 Agent loop with stop reasons`.
-3. Each PR has a record file at `docs/prs/phase-<N>/<N.S>-<slug>.md`, copied from [docs/prs/_TEMPLATE.md](docs/prs/_TEMPLATE.md), holding the PR link and the details of what was done.
-4. Each phase has an overview at `docs/prs/phase-<N>/README.md` that lists its PRs.
+2. Open one PR per branch into `main`. The PR title starts with the branch number and plan step, e.g. `02 (0.2) Scaffold project`.
+3. Each PR has a record file at `docs/prs/phase-<P>/<NN>-<slug>.md`, copied from [docs/prs/_TEMPLATE.md](docs/prs/_TEMPLATE.md), holding the PR link and the details of what was done.
+4. Each phase has an overview at `docs/prs/phase-<P>/README.md` that lists its PRs.
 5. Add each PR record to the table below when the PR is opened.
 6. Nothing is staged, committed or pushed without asking first.
 
@@ -27,7 +27,7 @@ Examples: `phase-0/0.2-scaffold-project`, `phase-1/1.3-agent-loop`, `phase-10/10
 
 | Phase | Topic | Overview | Code steps (one PR each) | Status |
 |---|---|---|---|---|
-| 0 | Smallest working agent | _not started_ | 0.2, 0.4, 0.7, 0.10 | planned |
+| 0 | Smallest working agent | [docs/prs/phase-0](docs/prs/phase-0/README.md) | 0.2 ([PR #2](https://github.com/shadmaanAsif/Agent-Harness-Engineering/pull/2)), 0.4, 0.7, 0.10 | in progress |
 | 1 | Agent loop | _not started_ | 1.2, 1.3, 1.4, 1.6, 1.7, 1.9 | planned |
 | 2 | Tool design | _not started_ | 2.2, 2.4, 2.5, 2.6, 2.7 | planned |
 | 3 | Context management | _not started_ | 3.2, 3.3, 3.5, 3.6, 3.8 | planned |

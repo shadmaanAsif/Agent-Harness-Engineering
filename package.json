@@ -1,0 +1,21 @@
+{
+  "name": "agent-harness",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=26"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "phase0": "tsx --env-file=.env src/phase0/agent.ts"
+  },
+  "dependencies": {
+    "openai": "^7.54.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

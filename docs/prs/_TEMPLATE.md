@@ -2,7 +2,7 @@
 
 - **Phase:** <N> (<phase name>)
 - **Step:** <N.S> code
-- **Branch:** `phase-<N>/<N.S>-<slug>`
+- **Branch:** `<NN>-phase-<P>-<slug>`
 - **PR:** <link, added once the PR is opened>
 - **Status:** planned | open | merged
 - **Date merged:** <YYYY-MM-DD>
